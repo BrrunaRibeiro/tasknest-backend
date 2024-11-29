@@ -31,3 +31,12 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()  
     serializer_class = TaskSerializer  
     permission_classes = [IsAuthenticated] 
+
+class CategoryListCreateView(generics.ListCreateAPIView):  
+    """  
+    GET: List all categories.  
+    POST: Create a new category.  
+    """  
+    queryset = Category.objects.all()  
+    serializer_class = CategorySerializer  
+    permission_classes = [IsAuthenticated]  
