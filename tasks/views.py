@@ -40,3 +40,13 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.all()  
     serializer_class = CategorySerializer  
     permission_classes = [IsAuthenticated]  
+
+class TaskListCreateView(generics.ListCreateAPIView):  
+    queryset = Task.objects.all()  
+    serializer_class = TaskSerializer  
+    permission_classes = [IsAuthenticated]  
+
+class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):  
+    queryset = Task.objects.all()  
+    serializer_class = TaskSerializer  
+    permission_classes = [IsAuthenticated]  
