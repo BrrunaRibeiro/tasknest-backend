@@ -14,12 +14,8 @@ from pathlib import Path
 import cloudinary
 import cloudinary.api
 import cloudinary.uploader
-
-cloudinary.config(   
-  cloud_name = 'your_cloud_name',   
-  api_key = 'your_api_key',   
-  api_secret = 'your_api_secret',  
-)  
+if os.path.isfile('env.py'):
+    import env
 
 MEDIA_URL = '/media/'  
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'  
@@ -31,13 +27,29 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w=@1n5bamb!@1z3qg^f^)y1sjvk@01$jgdyx*768u=^!w_49h6'
+# Retrieving environment variables
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
+CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
+CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
+
+cloudinary.config(
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET
+)
+# Set default file storage
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '.herokuapp.com',
+    # 'ep-gentle-mountain-a23bxz6h-pooler.eu-central-1.aws.neon.tech',
+    # '127.0.0.1', need to get it still
+]
 
 
 # Application definition
