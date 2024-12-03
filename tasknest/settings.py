@@ -99,9 +99,19 @@ WSGI_APPLICATION = 'tasknest.wsgi.application'
 
 
 # Database(PostgreSQL)
-DATABASES = {  
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))  
-}  
+if 'DEV' in os.environ:  
+    # Development database (SQLite)  
+    DATABASES = {  
+        'default': {  
+            'ENGINE': 'django.db.backends.sqlite3',  
+            'NAME': BASE_DIR / 'db.sqlite3',  
+        }  
+    }  
+else:  
+    # Production database (PostgreSQL or other)  
+    DATABASES = {  
+        'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))  
+    } 
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -162,4 +172,3 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
