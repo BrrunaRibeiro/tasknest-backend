@@ -38,3 +38,21 @@ class TaskSerializer(serializers.ModelSerializer):
             'owners', 'owner_ids', 'priority', 'category', 'category_id', 'state',  
             'created_at', 'updated_at'  
         ]
+
+# Serializer for user registration  
+class RegisterSerializer(serializers.ModelSerializer):  
+    """Handles user registration."""  
+    password = serializers.CharField(write_only=True)  
+
+    class Meta:  
+        model = User  
+        fields = ['email', 'password']  
+
+    def create(self, validated_data):  
+        # Create a new user with the provided email and password  
+        user = User.objects.create_user(  
+            username=validated_data['email'],  # Use email as the username  
+            email=validated_data['email'],  
+            password=validated_data['password']  
+        )  
+        return user  

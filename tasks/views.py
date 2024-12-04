@@ -2,6 +2,10 @@ from rest_framework import generics, filters
 from .models import Task, Category  
 from .serializers import TaskSerializer, CategorySerializer  
 from django_filters.rest_framework import DjangoFilterBackend  
+from rest_framework.views import APIView 
+from rest_framework.response import Response  
+from rest_framework import status  
+from .serializers import RegisterSerializer  
 from rest_framework.permissions import IsAuthenticated  
 
 class TaskListCreateView(generics.ListCreateAPIView):  
@@ -50,3 +54,18 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()  
     serializer_class = TaskSerializer  
     permission_classes = [IsAuthenticated]  
+
+class RegisterView(APIView):  
+    """Handles user registration."""  
+    def post(self, request):  
+        print("Request received at RegisterView")  # Log when the request reaches the view  
+        print("Request data:", request.data, request.body)  # Log the incoming request data  
+
+        serializer = RegisterSerializer(data=request.data)  
+        if serializer.is_valid():  
+            print("Serializer is valid")  # Log if the serializer validation passes  
+            serializer.save()  
+            return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)  
+
+        print("Serializer errors:", serializer.errors)  # Log validation errors if the serializer is invalid  
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
