@@ -1,7 +1,7 @@
 from django.urls import path  
 from .views import (  
     TaskListCreateView, TaskRetrieveUpdateDestroyView,  
-    CategoryListCreateView, RegisterView, 
+    CategoryListCreateView, RegisterView, LoginView
 )  
 
 urlpatterns = [  
