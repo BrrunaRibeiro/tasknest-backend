@@ -76,6 +76,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [  
     'http://localhost:3000',  
     'https://tasknest-backend-c911b6c54076.herokuapp.com',
+    'https://tasknest-backend-c911b6c54076.herokuapp.com/api/register/',
     'http://127.0.0.1:8000',
     'http://localhost',
     'http://192.168.1.252:3000',
@@ -92,7 +93,7 @@ CORS_ALLOW_METHODS = [
     "OPTIONS",
 ]
 CORS_ALLOW_HEADERS = [
-    "content-type",
+    "Content-Type",
     "authorization",
 ]
 
