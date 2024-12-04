@@ -37,11 +37,11 @@ ALLOWED_HOSTS = [
     '.herokuapp.com',
     'ep-shy-hall-a2g98y0a.eu-central-1.aws.neon.tech',
     '127.0.0.1',
-    'https://tasknest-frontend-b8d8d5129c14.herokuapp.com/'
-    'https://tasknest-backend-c911b6c54076.herokuapp.com/'
+    'https://tasknest-frontend-b8d8d5129c14.herokuapp.com/',
+    'https://tasknest-backend-c911b6c54076.herokuapp.com/',
     'http://localhost:3000',  
     'http://127.0.0.1:8000',
-    'http://localhost'
+    'http://localhost',
 ]
 
 
@@ -65,7 +65,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -86,6 +85,16 @@ CORS_ALLOWED_ORIGINS = [
     # Deployed Frontend URL 
 ]  
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "OPTIONS",
+]
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+]
 
 ROOT_URLCONF = 'tasknest.urls'
 
