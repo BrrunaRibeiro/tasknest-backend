@@ -31,7 +31,7 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'  
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '.herokuapp.com',
@@ -39,9 +39,10 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'https://tasknest-frontend-b8d8d5129c14.herokuapp.com/',
     'https://tasknest-backend-c911b6c54076.herokuapp.com/',
-    'http://localhost:3000',  
     'http://127.0.0.1:8000',
     'http://localhost',
+    'localhost:8000',
+    'localhost',
 ]
 
 
@@ -80,8 +81,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost',
     'http://192.168.1.252:3000',
-    'http://localhost:3000',
     'https://tasknest-frontend-b8d8d5129c14.herokuapp.com',
+    'https://localhost:8000',
 ]  
 CORS_ALLOW_CREDENTIALS = True
 
