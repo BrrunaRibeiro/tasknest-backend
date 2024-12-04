@@ -37,10 +37,9 @@ ALLOWED_HOSTS = [
     '.herokuapp.com',
     'ep-shy-hall-a2g98y0a.eu-central-1.aws.neon.tech',
     '127.0.0.1',
-    #deployed frontend
+    'https://tasknest-frontend-b8d8d5129c14.herokuapp.com/'
     'https://tasknest-backend-c911b6c54076.herokuapp.com/'
     'http://localhost:3000',  
-    'https://tasknest-backend-c911b6c54076.herokuapp.com',
     'http://127.0.0.1:8000',
     'http://localhost'
 ]
@@ -63,8 +62,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -82,6 +81,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost',
     'http://192.168.1.252:3000',
     'http://localhost:3000',
+    'https://tasknest-frontend-b8d8d5129c14.herokuapp.com'
 
     # Deployed Frontend URL 
 ]  
@@ -92,7 +92,8 @@ ROOT_URLCONF = 'tasknest.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'staticfiles', 'build')],
+        #tell Django and WhiteNoise where to look for Reacts index.html file in deployment
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -174,6 +175,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'  
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+WHITENOISE_ROOT = BASE_DIR / 'staticfiles' / 'build'
 
 #Using Whitenoise for serving static files in production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  
