@@ -40,19 +40,25 @@ class TaskSerializer(serializers.ModelSerializer):
         ]
 
 # Serializer for user registration  
-class RegisterSerializer(serializers.ModelSerializer):  
-    """Handles user registration."""  
-    password = serializers.CharField(write_only=True)  
+class RegisterSerializer(serializers.ModelSerializer):
+    """Handles user registration."""
+    password = serializers.CharField(write_only=True)
 
-    class Meta:  
-        model = User  
-        fields = ['email', 'password']  
+    class Meta:
+        model = User
+        fields = ['email', 'password']
 
-    def create(self, validated_data):  
-        # Create a new user with the provided email and password  
-        user = User.objects.create_user(  
-            username=validated_data['email'],  # Use email as the username  
-            email=validated_data['email'],  
-            password=validated_data['password']  
-        )  
-        return user  
+    def validate_password(self, value):
+        """Validates the password (e.g., minimum length)."""
+        if len(value) < 8:
+            raise serializers.ValidationError('Password must be at least 8 characters long.')
+        return value
+
+    def create(self, validated_data):
+        # Create a new user with the provided email and password
+        user = User.objects.create_user(
+            username=validated_data['email'],  # Use email as the username
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
+        return user

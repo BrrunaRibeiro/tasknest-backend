@@ -39,6 +39,10 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     #deployed frontend
     'https://tasknest-backend-c911b6c54076.herokuapp.com/'
+    'http://localhost:3000',  
+    'https://tasknest-backend-c911b6c54076.herokuapp.com',
+    'http://127.0.0.1:8000',
+    'http://localhost'
 ]
 
 
@@ -74,7 +78,12 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [  
     'http://localhost:3000',  
     'https://tasknest-backend-c911b6c54076.herokuapp.com',
-    # Frontend URL 
+    'http://127.0.0.1:8000',
+    'http://localhost',
+    'http://192.168.1.252:3000',
+    'http://localhost:3000',
+
+    # Deployed Frontend URL 
 ]  
 CORS_ALLOW_CREDENTIALS = True
 
