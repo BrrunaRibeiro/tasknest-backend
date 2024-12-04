@@ -56,19 +56,29 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
 class RegisterView(APIView):
     """Handles user registration."""
-    def post(self, request):
-        print("Request received at RegisterView")  # Log when the request reaches the view
-        print("Request data:", request.data, request.body)  # Log the incoming request data
-
-        # Use the updated RegisterSerializer
+    def post(self, request, *args, **kwargs):
+        print("Incoming request data:", request.data)  # Log request payload
         serializer = RegisterSerializer(data=request.data)
-        
-        # Check if the serializer is valid
         if serializer.is_valid():
-            print("Serializer is valid")  # Log if the serializer validation passes
-            serializer.save()  # Save the user data
-            return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
-
-        # Log and return errors if serializer is invalid
-        print("Serializer errors:", serializer.errors)
+            print("Validation successful.")  # Log success
+            serializer.save()
+            return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
+        else:
+            print("Validation errors:", serializer.errors)  # Log errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # print("Request received at RegisterView")  # Log when the request reaches the view
+        # print("Request data:", request.data, request.body)  # Log the incoming request data
+
+        # # Use the updated RegisterSerializer
+        # serializer = RegisterSerializer(data=request.data)
+        
+        # # Check if the serializer is valid
+        # if serializer.is_valid():
+        #     print("Serializer is valid")  # Log if the serializer validation passes
+        #     serializer.save()  # Save the user data
+        #     return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+
+        # # Log and return errors if serializer is invalid
+        # print("Serializer errors:", serializer.errors)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
