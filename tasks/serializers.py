@@ -1,6 +1,7 @@
 from rest_framework import serializers  
 from .models import Task, Category  
 from django.contrib.auth.models import User  
+from django.contrib.auth import authenticate
 
 class CategorySerializer(serializers.ModelSerializer):  
     """  
@@ -70,3 +71,20 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password']  
         )  
         return user
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=255)
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        # Authenticate user using Django's authenticate function
+        user = authenticate(username=username, password=password)
+
+        if not user:
+            raise serializers.ValidationError('Invalid username or password')
+
+        attrs['user'] = user  # Attach user to the validated data
+        return attrs

@@ -1,12 +1,13 @@
 from rest_framework import generics, filters
 from .models import Task, Category
-from .serializers import TaskSerializer, CategorySerializer, RegisterSerializer
+from .serializers import TaskSerializer, CategorySerializer, RegisterSerializer, LoginSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, BasePermission
+from rest_framework import status, permissions
+from rest_framework.permissions import IsAuthenticated, BasePermission, AllowAny
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -59,36 +60,36 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
 
-# class RegisterView(APIView):
-#     """Handles user registration."""
-#     def post(self, request, *args, **kwargs):
-#         print("Incoming request data:", request.data)  # Log request payload
-#         serializer = RegisterSerializer(data=request.data)
-#         if serializer.is_valid():
-#             print("Validation successful.")  # Log success
-#             serializer.save()
-#             return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
-#         else:
-#             print("Validation errors:", serializer.errors)  # Log errors
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# In views.py, for RegisterView
+class RegisterView(APIView):
+    """Handles user registration."""
+    permission_classes = []  # No permissions required, so no auth needed.
 
+    def post(self, request, *args, **kwargs):
+        print("Incoming request data:", request.data)  # Log request payload
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            print("Validation successful.")  # Log success
+            serializer.save()
+            return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
+        else:
+            print("Validation errors:", serializer.errors)  # Log errors
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# # New LoginView for user authentication
-# class LoginView(APIView):
-#     """Handles user login."""
-#     def post(self, request):
-#         username = request.data.get('username')
-#         password = request.data.get('password')
+class LoginView(APIView):
+    permission_classes = [AllowAny]
 
-#         # Authenticate the user
-#         user = authenticate(request, username=username, password=password)
+    def post(self, request):
+        # Use the LoginSerializer to validate and authenticate the user
+        serializer = LoginSerializer(data=request.data)
 
-#         if user is not None:
-#             # Generate JWT token
-#             refresh = RefreshToken.for_user(user)
-#             return Response({
-#                 'refresh': str(refresh),
-#                 'access': str(refresh.access_token),
-#             }, status=status.HTTP_200_OK)
-#         else:
-#             return Response({'error': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']  # Access the user object
+            refresh = RefreshToken.for_user(user)  # Generate the refresh token
+            return Response({
+                'access': str(refresh.access_token),  # Send back access token
+                'refresh': str(refresh)  # Send back refresh token
+            })
+
+        # If validation fails, return the error details
+        return Response(serializer.errors, status=400)

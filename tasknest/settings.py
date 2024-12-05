@@ -80,11 +80,15 @@ MIDDLEWARE = [
 ]
 
 # CORS settings
+# Determine if we are running in production or development environment
+IS_PRODUCTION = os.getenv('DJANGO_ENV') == 'production'
+
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'https://tasknest-frontend-b8d8d5129c14.herokuapp.com',
-    'https://tasknest-backend-c911b6c54076.herokuapp.com',
+    'http://localhost:3000',  # Local development URL
 ]
+
+if IS_PRODUCTION:
+    CORS_ALLOWED_ORIGINS.append('https://tasknest-backend-c911b6c54076.herokuapp.com')  # Add production URL
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["Content-Type", "authorization"]
@@ -175,9 +179,9 @@ JWT_AUTH_REFRESH_COOKIE = 'my-refresh-token'
 JWT_AUTH_SECURE = True
 
 # Rest Auth Serializers
-REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'tasks.serializers.CustomUserSerializer',
-}
+# REST_AUTH_SERIALIZERS = {
+#     'USER_DETAILS_SERIALIZER': 'tasks.serializers.CustomUserSerializer',
+# }
 
 # Cloudinary Configuration
 CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
