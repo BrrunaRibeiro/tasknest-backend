@@ -12,11 +12,19 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):  
     """  
-    Serializes User instances.  
+    Serializes User instances. Includes task count.  
     """  
+    task_count = serializers.SerializerMethodField()  
+
     class Meta:  
         model = User  
-        fields = ['id', 'username', 'email']  
+        fields = ['id', 'username', 'email', 'task_count']  
+
+    def get_task_count(self, obj):  
+        """  
+        Returns the count of tasks assigned to the user.  
+        """  
+        return obj.tasks.count()  
 
 class TaskSerializer(serializers.ModelSerializer):  
     """  
@@ -37,28 +45,28 @@ class TaskSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'due_date', 'is_overdue', 'attachment',  
             'owners', 'owner_ids', 'priority', 'category', 'category_id', 'state',  
             'created_at', 'updated_at'  
-        ]
+        ]  
 
 # Serializer for user registration  
 class RegisterSerializer(serializers.ModelSerializer):
-    """Handles user registration."""
-    password = serializers.CharField(write_only=True)
+    """Handles user registration."""  
+    password = serializers.CharField(write_only=True)  
 
-    class Meta:
-        model = User
-        fields = ['email', 'password']
+    class Meta:  
+        model = User  
+        fields = ['email', 'password']  
 
-    def validate_password(self, value):
-        """Validates the password (e.g., minimum length)."""
-        if len(value) < 8:
-            raise serializers.ValidationError('Password must be at least 8 characters long.')
-        return value
+    def validate_password(self, value):  
+        """Validates the password (e.g., minimum length)."""  
+        if len(value) < 8:  
+            raise serializers.ValidationError('Password must be at least 8 characters long.')  
+        return value  
 
-    def create(self, validated_data):
-        # Create a new user with the provided email and password
-        user = User.objects.create_user(
-            username=validated_data['email'],  # Use email as the username
-            email=validated_data['email'],
-            password=validated_data['password']
-        )
+    def create(self, validated_data):  
+        # Create a new user with the provided email and password  
+        user = User.objects.create_user(  
+            username=validated_data['email'],  # Use email as the username  
+            email=validated_data['email'],  
+            password=validated_data['password']  
+        )  
         return user
