@@ -9,7 +9,13 @@ from rest_framework.permissions import IsAuthenticated, BasePermission, AllowAny
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.http import JsonResponse
 
+def check_email(request):
+    email = request.GET.get('email', None)
+    if email and User.objects.filter(email=email).exists():
+        return JsonResponse({'email_exists': True})
+    return JsonResponse({'email_exists': False})
 
 # Custom Permission
 class IsTaskOwner(BasePermission):
@@ -66,14 +72,10 @@ class RegisterView(APIView):
     permission_classes = []  # No permissions required, so no auth needed.
 
     def post(self, request, *args, **kwargs):
-        print("Incoming request data:", request.data)  # Log request payload
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            print("Validation successful.")  # Log success
             serializer.save()
-            return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
-        else:
-            print("Validation errors:", serializer.errors)  # Log errors
+            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):

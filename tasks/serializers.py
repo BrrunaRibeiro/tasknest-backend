@@ -48,29 +48,43 @@ class TaskSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'  
         ]  
 
-# Serializer for user registration  
 class RegisterSerializer(serializers.ModelSerializer):
-    """Handles user registration."""  
-    password = serializers.CharField(write_only=True)  
+    """Handles user registration."""
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
 
-    class Meta:  
-        model = User  
-        fields = ['email', 'password']  
+    class Meta:
+        model = User
+        fields = ['email', 'password', 'confirm_password']
 
-    def validate_password(self, value):  
-        """Validates the password (e.g., minimum length)."""  
-        if len(value) < 8:  
-            raise serializers.ValidationError('Password must be at least 8 characters long.')  
-        return value  
+    def validate(self, data):
+        """Ensure password and confirm_password match."""
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError({'confirm_password': 'Passwords do not match.'})
+        return data
 
-    def create(self, validated_data):  
-        # Create a new user with the provided email and password  
-        user = User.objects.create_user(  
-            username=validated_data['email'],  # Use email as the username  
-            email=validated_data['email'],  
-            password=validated_data['password']  
-        )  
+    def validate_email(self, value):
+        """Check if email is already registered."""
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError('A user with this email already exists.')
+        return value
+
+    def validate_password(self, value):
+        """Validate password length."""
+        if len(value) < 8:
+            raise serializers.ValidationError('Password must be at least 8 characters long.')
+        return value
+
+    def create(self, validated_data):
+        """Remove confirm_password from validated data and create user."""
+        validated_data.pop('confirm_password')
+        user = User.objects.create_user(
+            username=validated_data['email'],  # Use email as the username
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
         return user
+
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
