@@ -88,3 +88,15 @@ class LoginSerializer(serializers.Serializer):
 
         attrs['user'] = user  # Attach user to the validated data
         return attrs
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate(self, attrs):
+        from rest_framework_simplejwt.tokens import RefreshToken
+        try:
+            token = RefreshToken(attrs['refresh'])
+            token.blacklist()  # Blacklists the token to invalidate it
+        except Exception as e:
+            raise serializers.ValidationError('Invalid token')
+        return attrs

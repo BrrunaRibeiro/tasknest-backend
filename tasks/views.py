@@ -93,3 +93,4 @@ class LoginView(APIView):
 
         # If validation fails, return the error details
         return Response(serializer.errors, status=400)
+
