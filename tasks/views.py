@@ -11,16 +11,6 @@ from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import JsonResponse
 
-def check_email(request):
-    email = request.GET.get('email', None)
-    if email:
-        # Check if email exists in the User model
-        if User.objects.filter(email=email).exists():
-            return JsonResponse({'email_exists': True})  # Return JSON if email exists
-        else:
-            return JsonResponse({'email_exists': False})  # Return JSON if email doesn't exist
-    return JsonResponse({'error': 'Invalid request'}, status=400)  # Return error if email is missing
-
 # Custom Permission
 class IsTaskOwner(BasePermission):
     """
@@ -106,3 +96,31 @@ class LogoutView(APIView):
         if serializer.is_valid():
             return Response({"detail": "Logout successful"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# New check-auth endpoint to verify if the user is authenticated
+class CheckAuthView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        # Return user info if authenticated
+        return Response({
+            "isAuthenticated": True,
+            "user": {
+                "username": user.username,
+                "email": user.email,
+            }
+        })
+
+
+# The check_email endpoint to verify if an email exists in the system
+def check_email(request):
+    email = request.GET.get('email', None)
+    if email:
+        # Check if email exists in the User model
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({'email_exists': True})  # Return JSON if email exists
+        else:
+            return JsonResponse({'email_exists': False})  # Return JSON if email doesn't exist
+    return JsonResponse({'error': 'Invalid request'}, status=400)  # Return error if email is missing
