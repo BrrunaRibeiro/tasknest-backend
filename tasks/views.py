@@ -1,6 +1,6 @@
 from rest_framework import generics, filters
 from .models import Task, Category
-from .serializers import TaskSerializer, CategorySerializer, RegisterSerializer, LoginSerializer
+from .serializers import TaskSerializer, CategorySerializer, RegisterSerializer, LoginSerializer, LogoutSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -94,3 +94,9 @@ class LoginView(APIView):
         # If validation fails, return the error details
         return Response(serializer.errors, status=400)
 
+class LogoutView(APIView):
+    def post(self, request):
+        serializer = LogoutSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response({"detail": "Logout successful"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
