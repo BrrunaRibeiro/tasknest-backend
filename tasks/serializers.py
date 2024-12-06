@@ -1,7 +1,7 @@
 from rest_framework import serializers  
 from .models import Task, Category  
 from django.contrib.auth.models import User  
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate  
 
 class CategorySerializer(serializers.ModelSerializer):  
     """  
@@ -49,7 +49,7 @@ class TaskSerializer(serializers.ModelSerializer):
         ]  
 
 class RegisterSerializer(serializers.ModelSerializer):
-    """Handles user registration."""
+    """Handles user registration with password confirmation."""
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 
@@ -77,7 +77,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Remove confirm_password from validated data and create user."""
-        validated_data.pop('confirm_password')
+        validated_data.pop('confirm_password')  # Remove confirm_password before creating user
         user = User.objects.create_user(
             username=validated_data['email'],  # Use email as the username
             email=validated_data['email'],

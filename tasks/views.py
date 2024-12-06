@@ -13,9 +13,13 @@ from django.http import JsonResponse
 
 def check_email(request):
     email = request.GET.get('email', None)
-    if email and User.objects.filter(email=email).exists():
-        return JsonResponse({'email_exists': True})
-    return JsonResponse({'email_exists': False})
+    if email:
+        # Check if email exists in the User model
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({'email_exists': True})  # Return JSON if email exists
+        else:
+            return JsonResponse({'email_exists': False})  # Return JSON if email doesn't exist
+    return JsonResponse({'error': 'Invalid request'}, status=400)  # Return error if email is missing
 
 # Custom Permission
 class IsTaskOwner(BasePermission):
