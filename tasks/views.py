@@ -19,7 +19,6 @@ class IsTaskOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user in obj.owners.all()
 
-
 class TaskListCreateView(generics.ListCreateAPIView):
     """
     GET: List all tasks with filtering capabilities.
@@ -38,7 +37,6 @@ class TaskListCreateView(generics.ListCreateAPIView):
         """
         serializer.save(owners=[self.request.user])  # Automatically assign the requesting user as an owner.
 
-
 class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
     GET: Retrieve a task by ID.
@@ -49,7 +47,6 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated, IsTaskOwner]  # Added IsTaskOwner permission
 
-
 class CategoryListCreateView(generics.ListCreateAPIView):
     """
     GET: List all categories.
@@ -59,10 +56,8 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
 
-
-# In views.py, for RegisterView
+# RegisterView: Handles user registration.
 class RegisterView(APIView):
-    """Handles user registration."""
     permission_classes = []  # No permissions required, so no auth needed.
 
     def post(self, request, *args, **kwargs):
@@ -97,21 +92,27 @@ class LogoutView(APIView):
             return Response({"detail": "Logout successful"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 # New check-auth endpoint to verify if the user is authenticated
 class CheckAuthView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Allow any user (even unauthenticated) to access this view
 
     def get(self, request):
-        user = request.user
-        # Return user info if authenticated
+        # Try to get the user from the request
+        if request.user.is_authenticated:
+            # If the user is authenticated, return the user data
+            return Response({
+                "isAuthenticated": True,
+                "user": {
+                    "username": request.user.username,
+                    "email": request.user.email,
+                }
+            })
+        
+        # If the user is not authenticated, just return a message indicating it's not authenticated
         return Response({
-            "isAuthenticated": True,
-            "user": {
-                "username": user.username,
-                "email": user.email,
-            }
-        })
+            "isAuthenticated": False,
+            "message": "User not authenticated. You can still register or log in."
+        }, status=status.HTTP_200_OK)
 
 
 # The check_email endpoint to verify if an email exists in the system
