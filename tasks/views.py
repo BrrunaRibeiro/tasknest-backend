@@ -38,17 +38,10 @@ class TaskListView(generics.ListAPIView):
             queryset = queryset.filter(state=state)
         return queryset
 
-
-# class TaskListView(generics.ListCreateAPIView):
-#     """
-#     GET: List all tasks with filtering capabilities.
-#     """
-#     queryset = Task.objects.all()
-#     serializer_class = TaskSerializer
-#     permission_classes = [IsAuthenticated]
-#     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-#     filterset_fields = ['priority', 'state', 'category__name', 'owners__username', 'is_overdue']
-#     search_fields = ['title', 'description']
+class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated]
 
 class TaskCreateView(generics.CreateAPIView):
     """
