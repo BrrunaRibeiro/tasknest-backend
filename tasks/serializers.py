@@ -1,52 +1,53 @@
-from rest_framework import serializers  
-from .models import Task, Category  
-from django.contrib.auth.models import User  
-from django.contrib.auth import authenticate  
+from rest_framework import serializers
+from .models import Task, Category
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from django.utils import timezone  # Added for due_date validation
 
-class CategorySerializer(serializers.ModelSerializer):  
-    """  
-    Serializes Category instances.  
-    """  
-    class Meta:  
-        model = Category  
-        fields = ['id', 'name']  
+class CategorySerializer(serializers.ModelSerializer):
+    """
+    Serializes Category instances.
+    """
+    class Meta:
+        model = Category
+        fields = ['id', 'name']
 
-class UserSerializer(serializers.ModelSerializer):  
-    """  
-    Serializes User instances. Includes task count.  
-    """  
-    task_count = serializers.SerializerMethodField()  
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializes User instances. Includes task count.
+    """
+    task_count = serializers.SerializerMethodField()
 
-    class Meta:  
-        model = User  
-        fields = ['id', 'username', 'email', 'task_count']  
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'task_count']
 
-    def get_task_count(self, obj):  
-        """  
-        Returns the count of tasks assigned to the user.  
-        """  
-        return obj.tasks.count()  
+    def get_task_count(self, obj):
+        """
+        Returns the count of tasks assigned to the user.
+        """
+        return obj.tasks.count()
 
-class TaskSerializer(serializers.ModelSerializer):  
-    """  
-    Serializes Task instances and includes related data.  
-    """  
-    owners = UserSerializer(many=True, read_only=True)  
-    owner_ids = serializers.PrimaryKeyRelatedField(  
-        queryset=User.objects.all(), source='owners', many=True, write_only=True  
-    )  
-    category = CategorySerializer(read_only=True)  
-    category_id = serializers.PrimaryKeyRelatedField(  
-        queryset=Category.objects.all(), source='category', write_only=True, allow_null=True  
-    )  
+class TaskSerializer(serializers.ModelSerializer):
+    """
+    Serializes Task instances and includes related data.
+    """
+    owners = UserSerializer(many=True, read_only=True)
+    owner_ids = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), source='owners', many=True, write_only=True
+    )
+    category = CategorySerializer(read_only=True)
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(), source='category', write_only=True, allow_null=True
+    )
 
-    class Meta:  
-        model = Task  
-        fields = [  
-            'id', 'title', 'description', 'due_date', 'is_overdue', 'attachment',  
-            'owners', 'owner_ids', 'priority', 'category', 'category_id', 'state',  
-            'created_at', 'updated_at'  
-        ]  
+    class Meta:
+        model = Task
+        fields = [
+            'id', 'title', 'description', 'due_date', 'is_overdue', 'attachment',
+            'owners', 'owner_ids', 'priority', 'category', 'category_id', 'state',
+            'created_at', 'updated_at'
+        ]
 
 class RegisterSerializer(serializers.ModelSerializer):
     """Handles user registration with password confirmation."""
@@ -85,7 +86,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
-
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=25)
     password = serializers.CharField(write_only=True)
@@ -111,6 +111,39 @@ class LogoutSerializer(serializers.Serializer):
         try:
             token = RefreshToken(attrs['refresh'])
             token.blacklist()  # Blacklists the token to invalidate it
-        except Exception as e:
+        except Exception:
             raise serializers.ValidationError('Invalid token')
         return attrs
+
+class TaskListSerializer(serializers.ModelSerializer):
+    """
+    A serializer for listing tasks.
+    Includes fields necessary for displaying tasks in a list.
+    """
+    class Meta:
+        model = Task
+        fields = [
+            'id', 'title', 'description', 'due_date', 'priority', 'state',
+            'is_overdue', 'created_at', 'updated_at'
+        ]
+
+class TaskCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating a new task with validation checks.
+    Ensures required fields are present and due_date is in the future.
+    """
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'due_date', 'priority', 'category', 'state', 'attachment']
+
+    def validate_due_date(self, value):
+        if value < timezone.now():
+            raise serializers.ValidationError("Due date must be in the future.")
+        return value
+
+    def validate(self, data):
+        required_fields = ['title', 'description', 'due_date']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                raise serializers.ValidationError({field: f"{field} is required."})
+        return data
