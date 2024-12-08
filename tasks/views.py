@@ -1,6 +1,6 @@
-from rest_framework import generics, filters
+from rest_framework import generics, filters, status
 from .models import Task, Category
-from .serializers import TaskSerializer, CategorySerializer, RegisterSerializer, LoginSerializer, LogoutSerializer
+from .serializers import TaskSerializer, CategorySerializer, RegisterSerializer, LoginSerializer, LogoutSerializer, TaskListSerializer, TaskCreateSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,6 +10,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import JsonResponse
+from rest_framework.response import Response
+from django.utils import timezone
 
 # Custom Permission
 class IsTaskOwner(BasePermission):
@@ -19,23 +21,52 @@ class IsTaskOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user in obj.owners.all()
 
-class TaskListCreateView(generics.ListCreateAPIView):
+class TaskListView(generics.ListAPIView):
     """
-    GET: List all tasks with filtering capabilities.
-    POST: Create a new task.
+    View for listing tasks with filtering options.
     """
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
+    serializer_class = TaskListSerializer
     permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['priority', 'state', 'category__name', 'owners__username', 'is_overdue']
-    search_fields = ['title', 'description']
+
+    def get_queryset(self):
+        queryset = Task.objects.filter(owners=self.request.user)
+        priority = self.request.query_params.get('priority')
+        state = self.request.query_params.get('state')
+        if priority:
+            queryset = queryset.filter(priority=priority)
+        if state:
+            queryset = queryset.filter(state=state)
+        return queryset
+
+
+# class TaskListView(generics.ListCreateAPIView):
+#     """
+#     GET: List all tasks with filtering capabilities.
+#     """
+#     queryset = Task.objects.all()
+#     serializer_class = TaskSerializer
+#     permission_classes = [IsAuthenticated]
+#     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+#     filterset_fields = ['priority', 'state', 'category__name', 'owners__username', 'is_overdue']
+#     search_fields = ['title', 'description']
+
+class TaskCreateView(generics.CreateAPIView):
+    """
+    View for creating a new task.
+    """
+    serializer_class = TaskCreateSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        """
-        Set the current user as an owner if not specified.
-        """
-        serializer.save(owners=[self.request.user])  # Automatically assign the requesting user as an owner.
+        # Automatically assign the requesting user as an owner
+        serializer.save(owners=[self.request.user])
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
