@@ -13,7 +13,10 @@ class TaskTests(APITestCase):
         Set up a user, category, and login for tests.
         """
         # Create user
-        self.user = User.objects.create_user(username='testuser', password='pass')
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='pass'
+        )
         self.category = Category.objects.create(name='Work')
 
         # Generate JWT token for authentication
@@ -21,7 +24,9 @@ class TaskTests(APITestCase):
         self.access_token = str(refresh.access_token)
 
         # Authenticate requests
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
+        )
 
     def test_create_task_with_all_features(self):
         """
@@ -31,7 +36,9 @@ class TaskTests(APITestCase):
         data = {
             'title': 'Advanced Task',
             'description': 'Testing advanced features.',
-            'due_date': datetime(2025, 12, 31, 23, 59, 59, tzinfo=timezone.utc).isoformat(),
+            'due_date': datetime(
+                2025, 12, 31, 23, 59, 59, tzinfo=timezone.utc
+            ).isoformat(),
             'priority': 'high',
             'category_id': self.category.id,
             'state': 'open',
@@ -49,7 +56,9 @@ class TaskTests(APITestCase):
         url = reverse('task-create')
         data = {
             'description': 'Missing title.',
-            'due_date': datetime(2025, 12, 31, 23, 59, 59, tzinfo=timezone.utc).isoformat(),
+            'due_date': datetime(
+                2025, 12, 31, 23, 59, 59, tzinfo=timezone.utc
+            ).isoformat(),
             'priority': 'medium',
             'category_id': self.category.id,
             'state': 'open',
@@ -67,7 +76,9 @@ class TaskTests(APITestCase):
         data = {
             'title': 'Invalid Due Date',
             'description': 'Testing invalid due date.',
-            'due_date': datetime(2020, 12, 31, 23, 59, 59, tzinfo=timezone.utc).isoformat(),
+            'due_date': datetime(
+                2020, 12, 31, 23, 59, 59, tzinfo=timezone.utc
+            ).isoformat(),
             'priority': 'high',
             'category_id': self.category.id,
             'state': 'open',
@@ -84,7 +95,9 @@ class TaskTests(APITestCase):
         task = Task.objects.create(
             title='Test Task',
             description='A task to retrieve.',
-            due_date=datetime(2025, 12, 31, 23, 59, 59, tzinfo=timezone.utc),
+            due_date=datetime(
+                2025, 12, 31, 23, 59, 59, tzinfo=timezone.utc
+            ),
             priority='low',
             state='open',
             category=self.category,
@@ -104,7 +117,9 @@ class TaskTests(APITestCase):
         data = {
             'title': 'Unauthorized Access',
             'description': 'Testing unauthorized access.',
-            'due_date': datetime(2025, 12, 31, 23, 59, 59, tzinfo=timezone.utc).isoformat(),
+            'due_date': datetime(
+                2025, 12, 31, 23, 59, 59, tzinfo=timezone.utc
+            ).isoformat(),
             'priority': 'low',
             'category_id': self.category.id,
             'state': 'open',
