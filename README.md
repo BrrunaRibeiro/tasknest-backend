@@ -94,9 +94,14 @@ Manual testing was conducted for all endpoints using Postman and the Django Rest
 - Checking authentication flows for JWT tokens.
 
 ### Automated Tests
-Unit tests are implemented for:
-- Task and category CRUD operations.
-- User authentication and email validation.
+The following test cases were implemented using Django's `APITestCase`:
+- **Task Creation**
+  - Successfully create a task with all required fields.
+  - Validate missing fields and raise appropriate errors.
+  - Prevent creation with invalid due dates.
+- **Task Retrieval**
+  - Allow task owners to view their tasks.
+  - Prevent unauthorized access to tasks.
 
 ### Python Validation
 All Python code was validated using the [PEP8CI Linter](https://pep8ci.herokuapp.com/), with no errors found.

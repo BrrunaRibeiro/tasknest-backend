@@ -1,6 +1,14 @@
 {
     "cSpell.words": [
+        "asgiref",
+        "certifi",
         "djangorestframework",
-        "readmeassets"
+        "idna",
+        "psycopg",
+        "readmeassets",
+        "setuptools",
+        "sqlparse",
+        "tzdata",
+        "urllib"
     ]
 }
