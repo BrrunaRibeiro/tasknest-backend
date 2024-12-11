@@ -48,6 +48,9 @@ class TaskSerializer(serializers.ModelSerializer):
             'owners', 'owner_ids', 'priority', 'category', 'category_id', 'state',
             'created_at', 'updated_at'
         ]
+        extra_kwargs = {
+            'state': {'required': False},  # Ensure the 'state' field is writable
+        }
 
 class RegisterSerializer(serializers.ModelSerializer):
     """Handles user registration with password confirmation."""

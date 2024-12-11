@@ -32,10 +32,16 @@ class TaskListView(generics.ListAPIView):
         queryset = Task.objects.filter(owners=self.request.user)
         priority = self.request.query_params.get('priority')
         state = self.request.query_params.get('state')
-        if priority:
+
+        if priority and priority not in ['low', 'medium', 'high']:
+            # Return all priorities if 'priority' is empty or invalid
+            queryset = queryset
+        elif priority:
             queryset = queryset.filter(priority=priority)
+
         if state:
             queryset = queryset.filter(state=state)
+
         return queryset
 
 class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -70,6 +76,25 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated, IsTaskOwner]  # Added IsTaskOwner permission
+
+    def patch(self, request, *args, **kwargs):
+        """
+        Handle partial updates (e.g., updating 'state' to 'completed').
+        """
+        task = self.get_object()
+        data = request.data
+
+        if 'state' in data and data['state'] == 'completed':
+            # Mark the task as completed
+            task.state = 'completed'
+            task.save()
+            return Response(
+                {"message": "Task marked as completed."},
+                status=status.HTTP_200_OK
+            )
+
+        return super().partial_update(request, *args, **kwargs)
+
 
 class CategoryListCreateView(generics.ListCreateAPIView):
     """
