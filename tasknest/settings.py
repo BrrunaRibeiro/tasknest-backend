@@ -88,8 +88,9 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 if IS_PRODUCTION:
-    CORS_ALLOWED_ORIGINS.append('https://tasknest-backend-c911b6c54076.herokuapp.com',
-                                'https://tasknest-frontend-b8d8d5129c14.herokuapp.com')  # Add production URL
+    CORS_ALLOWED_ORIGINS.append('https://tasknest-backend-c911b6c54076.herokuapp.com')
+    CORS_ALLOWED_ORIGINS.append('https://tasknest-frontend-b8d8d5129c14.herokuapp.com')
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"]
 CORS_ALLOW_HEADERS = ["Content-Type", "authorization", "X-Requested-With", 
