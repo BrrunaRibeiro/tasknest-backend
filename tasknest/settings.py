@@ -32,8 +32,8 @@ ALLOWED_HOSTS = [
     'ep-shy-hall-a2g98y0a.eu-central-1.aws.neon.tech',
     '127.0.0.1',
     'localhost',
-    'https://tasknest-frontend-b8d8d5129c14.herokuapp.com/',
-    'https://tasknest-backend-c911b6c54076.herokuapp.com/',
+    'https://tasknest-frontend-b8d8d5129c14.herokuapp.com',
+    'https://tasknest-backend-c911b6c54076.herokuapp.com',
 ]
 
 # Application definitions
@@ -88,7 +88,8 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 if IS_PRODUCTION:
-    CORS_ALLOWED_ORIGINS.append('https://tasknest-backend-c911b6c54076.herokuapp.com')  # Add production URL
+    CORS_ALLOWED_ORIGINS.append('https://tasknest-backend-c911b6c54076.herokuapp.com',
+                                'https://tasknest-frontend-b8d8d5129c14.herokuapp.com')  # Add production URL
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"]
 CORS_ALLOW_HEADERS = ["Content-Type", "authorization", "X-Requested-With", 
