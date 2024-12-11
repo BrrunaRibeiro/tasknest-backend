@@ -2,7 +2,7 @@
 
 ## Project Goals
 
-This project provides a Django Rest Framework API for the [TaskNest React web app](https://github.com/BrrunaRibeiro/tasknest-react). TaskNest is designed to help users efficiently manage tasks with filtering, prioritization, and intuitive interaction features.
+This project provides a Django Rest Framework API for the [TaskNest React App](https://github.com/BrrunaRibeiro/tasknest-react). TaskNest is designed to help users efficiently manage tasks with filtering, prioritization, and intuitive interaction features.
 
 The primary goals of the TaskNest backend are to:
 1. Provide a robust and secure API to support task management functionality in the frontend application.
@@ -28,6 +28,11 @@ The primary goals of the TaskNest backend are to:
 ---
 
 ## Planning
+Planning started by creating user stories for the frontend application, based on the project goals. See the [Board for the frontend React app](https://github.com/users/BrrunaRibeiro/projects/4/views/1) for more details.
+
+A wireframe was made for the Tasks Dashboard, which can be found in the [FrontEnd React App repository](https://github.com/BrrunaRibeiro/tasknest-react)
+
+The user stories requiring implementation to achieve a minimum viable product (MVP) were then mapped to API endpoints required to support the desired functionality.
 
 ### Data Models
 
@@ -45,7 +50,7 @@ The `Task` model represents a task and includes:
 - **State:** The status of the task (`open`, `completed`).
 - **Due Date:** When the task is expected to be completed.
 - **Category:** The type of task (e.g., "Work", "Personal").
-- **Owners:** A many-to-many relationship with the `User` model, allowing task sharing.
+- **Owners:** A many-to-many relationship with the `User` model, allowing task sharing in future releases.
 
 #### **Category**
 The `Category` model provides categories for task classification. It includes:
