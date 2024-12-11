@@ -37,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     """
     Serializer for Task model.
-    Includes related data for owners and category.
+    Ensures related data for owners,category,a complete attachment URL.
     """
     owners = UserSerializer(many=True, read_only=True)
     owner_ids = serializers.PrimaryKeyRelatedField(
@@ -53,6 +53,7 @@ class TaskSerializer(serializers.ModelSerializer):
         write_only=True,
         allow_null=True,
     )
+    attachment = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
@@ -64,6 +65,15 @@ class TaskSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'state': {'required': False},
         }
+
+    def get_attachment(self, obj):
+        """
+        Return the full URL of the attachment if it exists.
+        """
+        if obj.attachment:
+            request = self.context.get('request')
+            return request.build_absolute_uri(obj.attachment.url)
+        return None
 
 
 class RegisterSerializer(serializers.ModelSerializer):

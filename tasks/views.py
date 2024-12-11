@@ -88,6 +88,13 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated, IsTaskOwner]
 
+    def get_serializer_context(self):
+        """
+        Add the request context to the serializer.
+        """
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
     def patch(self, request, *args, **kwargs):
         """
         Partially update a task, such as changing its state to completed.
