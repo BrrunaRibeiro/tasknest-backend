@@ -115,17 +115,70 @@ All Python code was validated using the [PEP8CI Linter](https://pep8ci.herokuapp
 
 ## Deployment
 
-The backend is deployed on Heroku. Follow these steps to replicate the deployment:
-1. Fork or clone the repository.
-2. Set up a PostgreSQL database.
-3. Configure the following environment variables in Heroku:
-   - `DATABASE_URL`: PostgreSQL connection string.
-   - `CLOUDINARY_URL`: Cloudinary credentials.
-   - `SECRET_KEY`: Django secret key.
-   - `ALLOWED_HOST`: Allowed hosts for production.
-4. Deploy using the Heroku CLI or GitHub integration.
+### Prerequisites
+- A GitHub repository containing your Django project.
+- A Heroku account.
+- Ensure you have the following files correctly set up in your project:
+  - `Procfile`: Specifies the command Heroku uses to run your application.
+    ```text
+    web: gunicorn your_project_name.wsgi
+    ```
+  - `requirements.txt`: Lists all dependencies. Generate it using:
+    ```bash
+    pip freeze > requirements.txt
+    ```
+  - `runtime.txt` (Optional): Specifies the Python version, e.g.:
+    ```text
+    python-3.12.6
+    ```
 
----
+### Deployment Steps
+
+1. **Prepare Your Application for Heroku:**
+   - Ensure all static files are collected. Run:
+     ```bash
+     python manage.py collectstatic. I skipped this step since this is just a API.
+     ```
+   - Update `settings.py` to handle deployment:
+     - Add:
+       ```python
+       ALLOWED_HOSTS
+       ```
+     - Set `DEBUG` to `False`:
+       ```python
+       DEBUG = False
+       ```
+     - Use environment variables for sensitive information like `SECRET_KEY` and database credentials.
+
+2. **Push the Code to GitHub:**
+   - Ensure all changes are committed and pushed to your GitHub repository.
+
+3. **Log in to Heroku Website:**
+   - Visit [Heroku](https://www.heroku.com/) and log in.
+
+4. **Create a New Heroku App:**
+   - Click **"New"** and select **"Create New App"**.
+   - Provide a name for your app (must be unique) and select the region.
+
+5. **Connect to GitHub Repository:**
+   - In the **"Deploy"** tab, choose **"GitHub"** as the deployment method.
+   - Connect your GitHub account if prompted.
+   - Search for your repository and connect it.
+
+6. **Configure Buildpacks:**
+   - In the **"Settings"** tab, under **"Buildpacks"**, click **"Add Buildpack"**.
+   - Add the following buildpacks in this order:
+     1. **Python**
+
+7. **Set Up Environment Variables:**
+   - In the **"Settings"** tab, click **"Reveal Config Vars"** and add the following:
+     - `SECRET_KEY`: Your Django `SECRET_KEY`.
+     - `DATABASE_URL`: Your database URL (I used PostgreSQL).
+
+8. **Deploy Your Application:**
+   - Go back to the **"Deploy"** tab.
+   - In the **"Manual Deploy"** section, select the branch (usually `main`) and click **"Deploy Branch"**.
+   - Wait for Heroku to build and deploy your application.
 
 ## Credits
 
