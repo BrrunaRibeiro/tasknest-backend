@@ -80,7 +80,6 @@ class TaskCreateView(generics.CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-
 class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or delete a specific task.
@@ -97,6 +96,7 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
+
     def patch(self, request, *args, **kwargs):
         print("PATCH request data:", request.data)  # Debug incoming request
         task = self.get_object()
@@ -104,13 +104,13 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(task, data=request.data, partial=True)
         if not serializer.is_valid():
-            print("Validation errors:", serializer.errors)  # Debug validation errors
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            print("Validation errors:", serializer.errors)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
         serializer.save()
         print("Task after update:", serializer.instance)  # Debug updated task
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 
 class CategoryListCreateView(generics.ListCreateAPIView):
@@ -152,12 +152,10 @@ class LoginView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data['user']
             refresh = RefreshToken.for_user(user)
-            return Response(
-                {
-                    'access': str(refresh.access_token),
-                    'refresh': str(refresh),
-                }
-            )
+            return Response({
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+            })
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -184,25 +182,20 @@ class CheckAuthView(APIView):
 
     def get(self, request):
         if request.user.is_authenticated:
-            return Response(
-                {
-                    "isAuthenticated": True,
-                    "user": {
-                        "username": request.user.username,
-                        "email": request.user.email,
-                    },
-                }
-            )
-        return Response(
-            {
-                "isAuthenticated": False,
-                "message": (
-                    "User not authenticated. You can still "
-                    "register or log in."
-                ),
-            },
-            status=status.HTTP_200_OK,
-        )
+            return Response({
+                "isAuthenticated": True,
+                "user": {
+                    "username": request.user.username,
+                    "email": request.user.email,
+                },
+            })
+        return Response({
+            "isAuthenticated": False,
+            "message": (
+                "User not authenticated. You can still "
+                "register or log in."
+            ),
+        }, status=status.HTTP_200_OK)
 
 
 def check_email(request):

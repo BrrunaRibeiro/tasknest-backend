@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # DEBUG: Enable/disable debugging mode
-DEBUG = True  # Change to False in production!
+DEBUG = False  # Change to False in production!
 
 # ALLOWED_HOSTS: List of hosts allowed to access the application
 ALLOWED_HOSTS = [

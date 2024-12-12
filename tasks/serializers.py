@@ -46,12 +46,12 @@ class TaskSerializer(serializers.ModelSerializer):
         many=True,
         write_only=True,
     )
-    category = CategorySerializer(read_only=True)  # For reading detailed category
+    category = CategorySerializer(read_only=True)
     category_id = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),
-        source='category',  # Map to the category field
+        source='category',
         allow_null=True,
-        write_only=True,  # Use this for updates
+        write_only=True,
     )
     attachment = serializers.FileField(allow_null=True, required=False)
     attachment_url = serializers.SerializerMethodField()
@@ -64,15 +64,18 @@ class TaskSerializer(serializers.ModelSerializer):
             'priority', 'category', 'category_id', 'state',
             'created_at', 'updated_at',
         ]
-        extra_kwargs = {
-            'state': {'required': False},
-        }
+        extra_kwargs = {'state': {'required': False}}
 
     def validate(self, data):
-        print("Data being validated:", data)  # Debug incoming data
-        # Example of additional validation
-        if data.get('due_date') and data['due_date'] < self.context['request'].user.date_joined:
-            raise serializers.ValidationError("Due date cannot be before the user's join date.")
+        """
+        Example of additional validation.
+        """
+        print("Data being validated:", data)
+        if (data.get('due_date') and
+                data['due_date'] < self.context['request'].user.date_joined):
+            raise serializers.ValidationError(
+                "Due date cannot be before the user's join date."
+            )
         return data
 
     def get_attachment_url(self, obj):
@@ -83,17 +86,20 @@ class TaskSerializer(serializers.ModelSerializer):
             request = self.context.get('request')
             return request.build_absolute_uri(obj.attachment.url)
         return None
+
     def validate_state(self, value):
         if value == 'completed':
             return 'done'
         return value
+
     def to_representation(self, instance):
         """
         Customize the serialized output of the task.
         """
         representation = super().to_representation(instance)
-        print("Serialized task representation:", representation)  # Debug serialized output
+        print("Serialized task representation:", representation)
         return representation
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     """
