@@ -205,8 +205,9 @@ WHITENOISE_ROOT = BASE_DIR / 'staticfiles' / 'build'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media File Configuration
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'

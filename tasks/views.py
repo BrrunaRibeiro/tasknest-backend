@@ -73,10 +73,12 @@ class TaskCreateView(generics.CreateAPIView):
         serializer.save(owners=[self.request.user])
 
     def create(self, request, *args, **kwargs):
+        print(f"Request Files: {request.FILES}")
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 
 class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -96,21 +98,19 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         context['request'] = self.request
         return context
     def patch(self, request, *args, **kwargs):
-        """
-        Partially update a task, such as changing its state to completed.
-        """
+        print("PATCH request data:", request.data)  # Debug incoming request
         task = self.get_object()
-        data = request.data
+        print("Task before update:", task)  # Debug task instance
 
-        if 'state' in data and data['state'] == 'completed':
-            task.state = 'completed'
-            task.save()
-            return Response(
-                {"message": "Task marked as completed."},
-                status=status.HTTP_200_OK,
-            )
+        serializer = self.get_serializer(task, data=request.data, partial=True)
+        if not serializer.is_valid():
+            print("Validation errors:", serializer.errors)  # Debug validation errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return super().partial_update(request, *args, **kwargs)
+        serializer.save()
+        print("Task after update:", serializer.instance)  # Debug updated task
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class CategoryListCreateView(generics.ListCreateAPIView):

@@ -37,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     """
     Serializer for Task model.
-    Ensures related data for owners,category,a complete attachment URL.
+    Ensures related data for owners, category, and complete attachment URL.
     """
     owners = UserSerializer(many=True, read_only=True)
     owner_ids = serializers.PrimaryKeyRelatedField(
@@ -46,27 +46,36 @@ class TaskSerializer(serializers.ModelSerializer):
         many=True,
         write_only=True,
     )
-    category = CategorySerializer(read_only=True)
+    category = CategorySerializer(read_only=True)  # For reading detailed category
     category_id = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),
-        source='category',
-        write_only=True,
+        source='category',  # Map to the category field
         allow_null=True,
+        write_only=True,  # Use this for updates
     )
-    attachment = serializers.SerializerMethodField()
+    attachment = serializers.FileField(allow_null=True, required=False)
+    attachment_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
         fields = [
             'id', 'title', 'description', 'due_date', 'is_overdue',
-            'attachment', 'owners', 'owner_ids', 'priority', 'category',
-            'category_id', 'state', 'created_at', 'updated_at'
+            'attachment', 'attachment_url', 'owners', 'owner_ids',
+            'priority', 'category', 'category_id', 'state',
+            'created_at', 'updated_at',
         ]
         extra_kwargs = {
             'state': {'required': False},
         }
 
-    def get_attachment(self, obj):
+    def validate(self, data):
+        print("Data being validated:", data)  # Debug incoming data
+        # Example of additional validation
+        if data.get('due_date') and data['due_date'] < self.context['request'].user.date_joined:
+            raise serializers.ValidationError("Due date cannot be before the user's join date.")
+        return data
+
+    def get_attachment_url(self, obj):
         """
         Return the full URL of the attachment if it exists.
         """
@@ -74,7 +83,17 @@ class TaskSerializer(serializers.ModelSerializer):
             request = self.context.get('request')
             return request.build_absolute_uri(obj.attachment.url)
         return None
-
+    def validate_state(self, value):
+        if value == 'completed':
+            return 'done'
+        return value
+    def to_representation(self, instance):
+        """
+        Customize the serialized output of the task.
+        """
+        representation = super().to_representation(instance)
+        print("Serialized task representation:", representation)  # Debug serialized output
+        return representation
 
 class RegisterSerializer(serializers.ModelSerializer):
     """
